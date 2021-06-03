@@ -101,12 +101,12 @@ daybyday_1947_cumsum <- daybyday_playing_1947 %>%
 ####---- FILTER TO PLAYERS WITH ~5000PAs ----####
 
 
-# since each player won't have exactly 5150 PAs after a game, can't just filter B_PA == 5150
-# will get whatever game is closest to 5150 (within 10 PAs)
-# create B_PA_min to calculate the difference between current game PA & 5150 PAs
+# since each player won't have exactly 50000 PAs after a game, can't just filter B_PA == 5000
+# will get whatever game is closest to 5000 (within 10 PAs)
+# create B_PA_min to calculate the difference between current game PA & 5000 PAs
 
-daybyday_1947_5150PAs <- daybyday_1947_cumsum %>%
-  mutate(B_PA_min = abs(5150 - Cumulative.B_PA),
+daybyday_1947_5000PAs <- daybyday_1947_cumsum %>%
+  mutate(B_PA_min = abs(500 - Cumulative.B_PA),
          game_year = as.integer(str_sub(game.key, 4, 7))
   ) %>%
   
@@ -136,7 +136,7 @@ daybyday_harper <- daybyday_playing_1947 %>%
 
 
 
-# daybyday_1947_5150PAs only includes Harper's 2020 data
+# daybyday_1947_5000PAs only includes Harper's 2020 data
 # manually add Harper's 2021 numbers to to csv file
 # download dataframe
 write.csv(daybyday_harper,"~/Downloads/daybyday_harper.csv", row.names = TRUE)
@@ -148,8 +148,8 @@ daybyday_harper <- read.csv("~/Downloads/daybyday_harper_updated.csv")
   
   
 
-# select only the game closes to 5150 PA, like for other players
-daybyday_harper_5150PAs <-  daybyday_harper %>%
+# select only the game closes to 5000 PA, like for other players
+daybyday_harper_5000PAs <-  daybyday_harper %>%
   mutate(B_PA_min = abs(5150 - Cumulative.B_PA)) %>%
   
   # find season that is closest to 5150 PAs
@@ -163,7 +163,7 @@ daybyday_harper_5150PAs <-  daybyday_harper %>%
 
 
 # add Harper's stats to daybyday_1947_5150PAs
-daybyday_1947_5150PAs <- rbind(daybyday_1947_5150PAs, daybyday_harper_5150PAs)
+daybyday_1947_5000PAs <- rbind(daybyday_1947_5000PAs, daybyday_harper_5000PAs)
 
 
 
@@ -198,8 +198,8 @@ roster_1947 <- bind_rows(map(roster.csv.list, read.csv))
 
 # join name & position info with PA dataframe
 # select only 1 row per player
-daybyday_1947_5150PAs <- 
-  merge(x = daybyday_1947_5150PAs, 
+daybyday_1947_5000PAs <- 
+  merge(x = daybyday_1947_5000PAs, 
         y = roster_1947[ , c("player_id", "year", "last_name", 
                              "first_name", "x7")], 
         by.x = c("person.key", "game_year"), 
@@ -211,52 +211,43 @@ daybyday_1947_5150PAs <-
 
 
 # update Harper's roster info (missing because roster_1947 only goes up to 2020)
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "harpb003", 
+daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "last_name"] <- "Harper"
 
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "harpb003", 
+daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "first_name"] <- "Bryce"
 
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "harpb003", 
+daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "x7"] <- "OF"
 
 
 
 # clean up names where there are duplicate last_name + first_name combos
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "aloms101", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "aloms101", 
                       "last_name"] <- "Alomar Sr."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "aloms001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "aloms001", 
                       "last_name"] <- "Alomar Jr."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "gonza001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "gonza001", 
                       "first_name"] <- "Alex S."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "gonza002", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "gonza002", 
                       "first_name"] <- "Alex L."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "grifk001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "grifk001", 
                       "last_name"] <- "Griffey Sr."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "grifk002", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "grifk002", 
                       "last_name"] <- "Griffey Jr."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "thomf103", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "thomf103", 
                       "first_name"] <- "Frank J."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "thomf001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "thomf001", 
                       "first_name"] <- "Frank E."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "uptob001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "uptob001", 
                       "first_name"] <- "B.J."
-
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "youne001", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "youne001", 
                       "last_name"] <- "Young Sr."
 
 
 
 # concatenate first_name + last_name fields together
-daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
+daybyday_1947_5000PAs <- daybyday_1947_5000PAs %>%
   unite("full_name", 
         first_name:last_name, 
         sep = " ", remove = FALSE)
@@ -264,7 +255,7 @@ daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
 
 
 # get debut year & last year of player's career in people dataframe
-# then join to daybyday_1947_5150PAs
+# then join to daybyday_1947_5000PAs
 people <- People %>%
   group_by(playerID) %>%
   mutate(final_year = as.integer(str_sub(finalGame, 1, 4)),
@@ -272,8 +263,8 @@ people <- People %>%
   )
 
 
-daybyday_1947_5150PAs <- 
-  merge(x = daybyday_1947_5150PAs,
+daybyday_1947_5000PAs <- 
+  merge(x = daybyday_1947_5000PAs,
         y = people[ ,c("retroID", "debut_year", "final_year")],
         by.x = "person.key",
         by.y = "retroID",
@@ -282,7 +273,7 @@ daybyday_1947_5150PAs <-
 
 
 #save full name values
-# names_5000_all <- daybyday_1947_5150PAs$full_name
+# names_5000_all <- daybyday_1947_5000PAs$full_name
 
 
 
@@ -301,19 +292,19 @@ people <- people %>%
 
 
 
-# join people dataframe to daybyday_1947_5150PAs
+# join people dataframe to daybyday_1947_5000PAs
 # retroID (not playerID) matches up to person.key 
-daybyday_1947_5150PAs <-  
-  merge(x = daybyday_1947_5150PAs, 
+daybyday_1947_5000PAs <-  
+  merge(x = daybyday_1947_5000PAs, 
         y = people[, c("retroID", "birthYear", "birthMonth")],
         by.x = "person.key",
         by.y = "retroID",
         all.x = TRUE)
 
 
-# calc age at 5150th PA
+# calc age at 5000th PA
 # using age code from Analyzing Baseball Data with R (MLB defines age as age on June 30th of season)
-daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
+daybyday_1947_5000PAs <- daybyday_1947_5000PAs %>%
   mutate(birthyear = ifelse(birthMonth >= 7,
                             birthYear + 1, birthYear),
          Age = game_year - birthyear
@@ -350,8 +341,8 @@ inductees <-
 
 
 # merge hof inductees with daybyday_1947_5150PAs to get inducted status
-daybyday_1947_5150PAs <- 
-  merge(x = daybyday_1947_5150PAs, 
+daybyday_1947_5000PAs <- 
+  merge(x = daybyday_1947_5000PAs, 
         y = inductees[ , c("fullName", "inducted")], 
         by.x = "full_name",
         by.y = "fullName",
@@ -360,8 +351,8 @@ daybyday_1947_5150PAs <-
 
 
 # manually update Griffey's inducted status 
-# (listed with "Jr." in daybyday_1947_5150PAs, without "Jr." in inductees)
-daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "grifk002", 
+# (listed with "Jr." in daybyday_1947_5000PAs, without "Jr." in inductees)
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "grifk002", 
                       "inducted"] <- 1
 
 
@@ -370,13 +361,13 @@ daybyday_1947_5150PAs[daybyday_1947_5150PAs$person.key == "grifk002",
 # local file with names from MLB.com
 current_players <- read.csv("~/Downloads/current_mlb_players.csv")
 
-daybyday_1947_5150PAs <-
-  anti_join(daybyday_1947_5150PAs, current_players, by="full_name")
+daybyday_1947_5000PAs <-
+  anti_join(daybyday_1947_5000PAs, current_players, by="full_name")
 
 
 
 # save name values
-# names_5000_noncurrent <- daybyday_1947_5150PAs$full_name
+# names_5000_noncurrent <- daybyday_1947_5000PAs$full_name
 
 
 
@@ -387,7 +378,7 @@ daybyday_1947_5150PAs <-
 ####---- CALC BASIC RATE STATS ----####
 
 
-daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
+daybyday_1947_5000PAs <- daybyday_1947_5000PAs %>%
   mutate(AVG = Cumulative.B_H / Cumulative.B_AB,
          SLG = (Cumulative.B_H - Cumulative.B_2B - Cumulative.B_3B - Cumulative.B_HR + 
                   2 * Cumulative.B_2B + 3 * Cumulative.B_3B + 4 * Cumulative.B_HR) / Cumulative.B_AB,
@@ -446,8 +437,8 @@ war[war$player_ID == "thomafr04",
 
 
 # merge war with daybyday_1947_5000PAs
-calcs_1947_5150PAs <- 
-  merge(x = daybyday_1947_5150PAs, 
+calcs_1947_5000PAs <- 
+  merge(x = daybyday_1947_5000PAs, 
         y = war[, c("name_common", "age", "year_ID", "bWAR", "WAR", 
                     "WAR162", "Career.WAR", "wRCp")],
         by.x = c("full_name", "game_year"),
@@ -457,7 +448,7 @@ calcs_1947_5150PAs <-
 
 
 # summarize metrics that get fragmented for individual players (usually ones on multiple teams in one season)
-calcs_1947_5150PAs <- calcs_1947_5150PAs %>%
+calcs_1947_5000PAs <- calcs_1947_5000PAs %>%
   group_by(full_name) %>%
   summarize(bWAR = sum(bWAR, na.rm = TRUE),
             WAR = sum(WAR, na.rm = TRUE),
@@ -469,13 +460,13 @@ calcs_1947_5150PAs <- calcs_1947_5150PAs %>%
 
 
 # join calcs to daybyday_1947_5150PAs dataframe
-daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
+daybyday_1947_5000PAs <- daybyday_1947_5000PAs %>%
   left_join(calcs_1947_5150PAs, by = "full_name")
 
 
 
 # save to csv to share with group / add to Google Sheeet
-write.csv(daybyday_1947_5150PAs,"~/Downloads/daybyday_1947_5150PAs_2.csv", row.names = TRUE)
+write.csv(daybyday_1947_5000PAs,"~/Downloads/daybyday_1947_5150PAs_2.csv", row.names = TRUE)
 
 
 
