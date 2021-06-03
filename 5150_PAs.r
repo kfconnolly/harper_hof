@@ -32,6 +32,7 @@ retro1901.csv.list <- list.files(path="~/Downloads/retrosplits/daybyday_playing_
                              full.names=TRUE)
 
 # create list / character vector of all the names of the files in the post-1947 folder
+# note that this folder goes back to 1938 because some players who hit ~5150PA post-1947 starteed playing before 1947
 retro1947.csv.list <- list.files(path="~/Downloads/retrosplits/daybyday_playing_post1947", 
                                  pattern=".csv$", 
                                  full.names=TRUE)
@@ -103,7 +104,9 @@ daybyday_1947_cumsum <- daybyday_playing_1947 %>%
 # create B_PA_min to calculate the difference between current game PA & 5150 PAs
 
 daybyday_1947_5150PAs <- daybyday_1947_cumsum %>%
-  mutate(B_PA_min = abs(5150 - Cumulative.B_PA)) %>%
+  mutate(B_PA_min = abs(5150 - Cumulative.B_PA),
+         game_year = as.integer(str_sub(game.key, 4, 7))
+  ) %>%
   
   # find season that is closest to 5150 PAs
   # if a hitter has a tie, select only one row
@@ -111,9 +114,12 @@ daybyday_1947_5150PAs <- daybyday_1947_cumsum %>%
   slice(which.min(B_PA_min)) %>%
   
   # remove players who didn't have ~5000PAs
-  filter(B_PA_min < 10) 
+  filter(B_PA_min < 10) %>%
 
+  # only select players who reached ~5000PAs in 1947 or after
+  filter(game_year >= 1947)
 
+  
 
 
 
@@ -123,7 +129,7 @@ daybyday_1947_5150PAs <- daybyday_1947_cumsum %>%
 
 
 # create Harper dataframe
-daybyday_harper <- daybyday_1947_5150PAs %>%
+daybyday_harper <- daybyday_playing_1947 %>%
   filter(person.key == "harpb003")
 
 
@@ -188,25 +194,12 @@ roster_1947 <- bind_rows(map(roster.csv.list, read.csv))
 
 
 
-# get last year of player's career
-roster_1947 <- roster_1947 %>%
-  group_by(player_id) %>%
-  mutate(final_year = max(year))
-
-
-
-# get the year of the game
-daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
-  mutate(game_year = as.integer(str_sub(game.key, 4, 7)))
-
-
-
 # join name & position info with PA dataframe
 # select only 1 row per player
 daybyday_1947_5150PAs <- 
   merge(x = daybyday_1947_5150PAs, 
         y = roster_1947[ , c("player_id", "year", "last_name", 
-                             "first_name", "x7", "final_year")], 
+                             "first_name", "x7")], 
         by.x = c("person.key", "game_year"), 
         by.y = c("player_id", "year"),
         all.x=TRUE) %>%
@@ -267,6 +260,25 @@ daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
         sep = " ", remove = FALSE)
 
 
+
+# get debut year & last year of player's career in people dataframe
+# then join to daybyday_1947_5150PAs
+people <- People %>%
+  group_by(playerID) %>%
+  mutate(final_year = as.integer(str_sub(finalGame, 1, 4)),
+         debut_year = as.integer(str_sub(debut, 1, 4))
+  )
+
+
+daybyday_1947_5150PAs <- 
+  merge(x = daybyday_1947_5150PAs,
+        y = people[ ,c("retroID", "debut_year", "final_year")],
+        by.x = "person.key",
+        by.y = "retroID",
+        all.x = TRUE)
+
+
+
 #save full name values
 # names_5000_all <- daybyday_1947_5150PAs$full_name
 
@@ -280,7 +292,7 @@ daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
 
 
 # concatenate first_name + last_name fields together in People dataframe (from Lahman)
-people <- People %>%
+people <- people %>%
   unite("full_name", 
         nameFirst:nameLast, 
         sep = " ", remove = FALSE)
@@ -326,14 +338,12 @@ inductees <- HallOfFame %>%
             best = max(votes/ballots)) %>%
   arrange(desc(best))
 
-
 # add names by merging with People dataframe (Lahman)
 inductees <-
   merge(x = inductees, 
         y = People[ , c("playerID", "nameFirst", "nameLast")], 
         by = "playerID", 
         all.x = TRUE) 
-
 
 # concatenate first & last names
 inductees <- inductees %>%
@@ -370,7 +380,7 @@ daybyday_1947_5150PAs <-
 
 
 # save name values
-#names_5000_noncurrent <- daybyday_1947_5150PAs$full_name
+# names_5000_noncurrent <- daybyday_1947_5150PAs$full_name
 
 
 
@@ -469,7 +479,7 @@ daybyday_1947_5150PAs <- daybyday_1947_5150PAs %>%
 
 
 # save to csv to share with group / add to Google Sheeet
-write.csv(daybyday_1947_5150PAs,"~/Downloads/daybyday_1947_5150PAs.csv", row.names = TRUE)
+write.csv(daybyday_1947_5150PAs,"~/Downloads/daybyday_1947_5150PAs_2.csv", row.names = TRUE)
 
 
 
