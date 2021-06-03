@@ -62,7 +62,9 @@ retro_vars <- c("B_G", "B_PA", "B_AB", "B_R", "B_H", "B_TB", "B_2B", "B_3B",
 
 # only select batting stats from daybyday_playing_1947
 # replace all NAs with 0 or else calculations will not work
+# use 'evt' game.source (includes PA, and not filtering will duplicate data for players with more than one game.source available)
 daybyday_playing_1947 <- daybyday_playing_1947 %>%
+  filter(game.source == "evt") %>%
   select(game.key:B_G_PR) %>%
   mutate_if(is.integer, replace_na, 0)
 
@@ -341,15 +343,9 @@ inductees <- HallOfFame %>%
 # add names by merging with People dataframe (Lahman)
 inductees <-
   merge(x = inductees, 
-        y = People[ , c("playerID", "nameFirst", "nameLast")], 
+        y = people[ , c("playerID", "nameFirst", "nameLast", "full_name")], 
         by = "playerID", 
         all.x = TRUE) 
-
-# concatenate first & last names
-inductees <- inductees %>%
-  unite("fullName", 
-        nameFirst:nameLast, 
-        sep = " ", remove = FALSE)
 
 
 
