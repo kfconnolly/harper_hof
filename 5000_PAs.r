@@ -150,15 +150,13 @@ daybyday_harper <- read.csv("~/Downloads/daybyday_harper_updated.csv")
 
 # select only the game closes to 5000 PA, like for other players
 daybyday_harper_5000PAs <-  daybyday_harper %>%
-  mutate(B_PA_min = abs(5150 - Cumulative.B_PA)) %>%
+  mutate(B_PA_min = abs(5000 - Cumulative.B_PA)) %>%
+  game_year = as.integer(str_sub(game.key, 4, 7)) %>%
   
   # find season that is closest to 5150 PAs
   # if a hitter has a tie, select only one row
   group_by(person.key) %>%
   slice(which.min(B_PA_min)) %>%
-  
-  # remove players who didn't have ~5000PAs
-  filter(B_PA_min < 10) 
   
 
 
@@ -213,10 +211,8 @@ daybyday_1947_5000PAs <-
 # update Harper's roster info (missing because roster_1947 only goes up to 2020)
 daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "last_name"] <- "Harper"
-
 daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "first_name"] <- "Bryce"
-
 daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "x7"] <- "OF"
 
@@ -461,12 +457,12 @@ calcs_1947_5000PAs <- calcs_1947_5000PAs %>%
 
 # join calcs to daybyday_1947_5150PAs dataframe
 daybyday_1947_5000PAs <- daybyday_1947_5000PAs %>%
-  left_join(calcs_1947_5150PAs, by = "full_name")
+  left_join(calcs_1947_5000PAs, by = "full_name")
 
 
 
 # save to csv to share with group / add to Google Sheeet
-write.csv(daybyday_1947_5000PAs,"~/Downloads/daybyday_1947_5150PAs_2.csv", row.names = TRUE)
+write.csv(daybyday_1947_5000PAs,"~/Downloads/daybyday_1947_5000PAs.csv", row.names = TRUE)
 
 
 
