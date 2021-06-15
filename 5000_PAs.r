@@ -106,7 +106,7 @@ daybyday_1947_cumsum <- daybyday_playing_1947 %>%
 # create B_PA_min to calculate the difference between current game PA & 5000 PAs
 
 daybyday_1947_5000PAs <- daybyday_1947_cumsum %>%
-  mutate(B_PA_min = abs(500 - Cumulative.B_PA),
+  mutate(B_PA_min = abs(5000 - Cumulative.B_PA),
          game_year = as.integer(str_sub(game.key, 4, 7))
   ) %>%
   
@@ -339,9 +339,8 @@ inductees <-
 # merge hof inductees with daybyday_1947_5150PAs to get inducted status
 daybyday_1947_5000PAs <- 
   merge(x = daybyday_1947_5000PAs, 
-        y = inductees[ , c("fullName", "inducted")], 
-        by.x = "full_name",
-        by.y = "fullName",
+        y = inductees[ , c("full_name", "inducted")], 
+        by = "full_name",
         all.x = TRUE)
 
 
@@ -404,6 +403,7 @@ war <- read.csv("https://raw.githubusercontent.com/NeilPaine538/MLB-WAR-data-his
 war <- war %>%
   arrange(player_ID, year_ID) %>%
   group_by(player_ID) %>%
+  mutate_if(is.integer, replace_na, 0) %>%
   mutate(Career.WAR = cumsum(WAR),
          Career.wRCp_avg = cumsum(wRCp) / seq_along(wRCp)
   )
