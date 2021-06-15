@@ -405,8 +405,8 @@ war <- war %>%
   arrange(player_ID, year_ID) %>%
   group_by(player_ID) %>%
   mutate(Career.WAR = cumsum(WAR),
-         Career.wRCp_avg = cumsum(wRCp) / seq_along(wRCp))
-)
+         Career.wRCp_avg = cumsum(wRCp) / seq_along(wRCp)
+  )
 
 
 
@@ -438,7 +438,7 @@ war[war$player_ID == "thomafr04",
 calcs_1947_5000PAs <- 
   merge(x = daybyday_1947_5000PAs, 
         y = war[, c("name_common", "age", "year_ID", "bWAR", "WAR", 
-                    "WAR162", "Career.WAR", "wRCp")],
+                    "WAR162", "Career.WAR", "wRCp", "Career.wRCp_avg")],
         by.x = c("full_name", "game_year"),
         by.y = c("name_common", "year_ID"),
         all.x = TRUE)
@@ -453,6 +453,7 @@ calcs_1947_5000PAs <- calcs_1947_5000PAs %>%
             WAR162 = sum(WAR162, na.rm = TRUE),
             Career.WAR = sum(Career.WAR, na.rm = TRUE),
             wRCp = mean(wRCp, na.rm = TRUE),
+            Career.wRCp_avg = mean(Career.wRCp_avg, na.rm = TRUE)
   )
 
 
