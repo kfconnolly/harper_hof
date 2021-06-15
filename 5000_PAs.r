@@ -400,11 +400,13 @@ war <- read.csv("https://raw.githubusercontent.com/NeilPaine538/MLB-WAR-data-his
 
 
 
-# calculate cumulative WAR
+# calculate cumulative WAR & cumulative average wRC+
 war <- war %>%
   arrange(player_ID, year_ID) %>%
   group_by(player_ID) %>%
-  mutate(Career.WAR = cumsum(WAR))
+  mutate(Career.WAR = cumsum(WAR),
+         Career.wRCp_avg = cumsum(wRCp) / seq_along(wRCp))
+)
 
 
 
