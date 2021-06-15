@@ -32,7 +32,7 @@ retro1901.csv.list <- list.files(path="~/Downloads/retrosplits/daybyday_playing_
                              full.names=TRUE)
 
 # create list / character vector of all the names of the files in the post-1947 folder
-# note that this folder goes back to 1938 because some players who hit ~5150PA post-1947 starteed playing before 1947
+# note that this folder goes back to 1938 because some players who hit ~5000PA post-1947 starteed playing before 1947
 retro1947.csv.list <- list.files(path="~/Downloads/retrosplits/daybyday_playing_post1947", 
                                  pattern=".csv$", 
                                  full.names=TRUE)
@@ -160,7 +160,7 @@ daybyday_harper_5000PAs <-  daybyday_harper %>%
   
 
 
-# add Harper's stats to daybyday_1947_5150PAs
+# add Harper's stats to daybyday_1947_5000PAs
 daybyday_1947_5000PAs <- rbind(daybyday_1947_5000PAs, daybyday_harper_5000PAs)
 
 
@@ -209,11 +209,11 @@ daybyday_1947_5000PAs <-
 
 
 # update Harper's roster info (missing because roster_1947 only goes up to 2020)
-daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "last_name"] <- "Harper"
-daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "first_name"] <- "Bryce"
-daybyday_1947_5150PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
+daybyday_1947_5000PAs[daybyday_1947_5000PAs$person.key == "harpb003", 
                       "x7"] <- "OF"
 
 
